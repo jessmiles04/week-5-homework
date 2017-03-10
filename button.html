@@ -1,0 +1,136 @@
+<title>Favorite Aliens</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+  <style type="text/css">
+    button,
+    div,
+    form,
+    input {
+      margin: 10px;
+    }
+
+   h1 {
+    color: white;
+    text-align: center;
+   }
+
+   p {
+    color: white;
+   }
+
+   body {
+    background-image: url("background.jpg");
+}
+    }
+
+  </style>
+</head>
+<body>
+<!--  -->
+  <div class="container">
+    <h1>Not saying it's aliens, but...</h1>
+    <!-- buttons go here -->
+    <div class="row">
+    <div class="col-xs-6 col-md-4">
+    <div id="buttons-view"></div>
+
+    <form id="movie-form">
+      <input type="text" id="alien-input"><br>
+      <input id="add-alien" type="submit" value="Find an Alien">
+    </form>
+    </div>
+    
+    <div class="col-xs-12 col-md-7">
+    <div id="aliens-view"></div>
+    </div>
+    </div>
+    <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+    <script type="text/javascript">
+      // Initial array of aliens
+   var aliens = ["10th Doctor", "Spock", "Yoda", "Gamora", "Jabba the Hutt", "Predator", "Drax", "Groot", "Silver Surfer", "Ackbar", "ET"];
+      // displayAlienInfo function for new content in HTLM
+      function displayAlienInfo() {
+        var alien = $(this).attr("data-name");
+        var queryURL = "http://api.giphy.com/v1/gifs/search?q=" + alien + "&api_key=dc6zaTOxFJmzC&limit=10";
+        // Creating an AJAX call for the specific alien button being clicked
+        $.ajax({
+          url: queryURL,
+          method: "GET"
+        }).done(function(response) {
+          var alienDiv = $("<div class='alien'>");
+          var results = response.data;
+          console.log(results);
+           for (var i = 0; i < results.length; i++) {
+            var alienDiv = $("<div>");
+          var p = $("<p>").text("Rating: " + results[i].rating);
+
+          var image = $("<img>");
+          image.addClass("image");
+          console.log(image);
+
+          image.attr("src", results[i].images.fixed_width_still.url);
+          image.attr("data-still", results[i].images.fixed_width_still.url);
+          image.attr("data-state","still");
+          image.attr("data-animate", results[i].images.fixed_width.url);
+
+          alienDiv.append(image);
+          $(alienDiv).append(p);
+          $("#aliens-view").prepend(alienDiv);}     
+
+       });
+      }
+
+      // Function for displaying alien data
+      function renderButtons() {
+        $("#buttons-view").empty();
+
+        for (var i = 0; i < aliens.length; i++) {
+          var a = $("<button>");
+
+          a.addClass("alien");
+
+          a.attr("data-name", aliens[i]);
+
+          a.text(aliens[i]);
+  
+          $("#buttons-view").append(a);
+        }
+      }
+
+      $("#add-alien").on("click", function(event) {
+        event.preventDefault();
+
+        var alien = $("#alien-input").val().trim();
+
+        aliens.push(alien);
+
+        renderButtons();
+      });
+
+
+//displays 10 gifs of each alien
+ $(document).on("click", ".alien", displayAlienInfo);
+
+//make gif images clickable for animation glory
+
+  $(document).on("click", ".image", function() {
+      var state = $(this).attr("data-state"); 
+
+    if (state == "still") {      
+  $(this).attr("src", $(this).attr("data-animate"));
+  $(this).attr("data-state", "animate");          
+
+} else { 
+      $(this).attr("data-state", "still");  
+       $(this).attr("src", $(this).attr("data-still"));
+      
+      }    
+});
+
+
+      renderButtons();
+
+    </script>
+  </div>
+</body>
+</html>
